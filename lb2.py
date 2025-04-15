@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import random
 import re
 import string
@@ -64,8 +65,44 @@ def task1_iterator1() -> None:
     print(f"Decrypted: {decrypted!r}")
 
 
+class Task2FileList:
+    __slots__ = ("file_names",)
+
+    class FileLineIterator:
+        __slots__ = ("file_list", "position",)
+
+        def __init__(self, file_list: Task2FileList):
+            self.file_list = file_list
+            self.position = 0
+
+        def __next__(self) -> str | None:
+            if self.position >= len(self.file_list.file_names):
+                raise StopIteration
+
+            file_name = self.file_list.file_names[self.position]
+            self.position += 1
+
+            if not os.path.isfile(file_name):
+                return None
+
+            with open(file_name, "rb") as f:
+                try:
+                    return f.readline().decode("utf8")
+                except UnicodeDecodeError:
+                    return None
+
+    def __init__(self, file_names: list[str]) -> None:
+        self.file_names = file_names
+
+    def __iter__(self) -> FileLineIterator:
+        return self.FileLineIterator(self)
+
+
 def task2_iterator2() -> None:
-    ...  # TODO: iterator task
+    """ Iterator to return first line (or None if file is binary) from each file from list """
+    file_names = os.listdir()
+    for file_name, file_content in zip(file_names, Task2FileList(file_names)):
+        print(f"{file_name} - {file_content!r}")
 
 
 def task3_fibonacci(n: int) -> Generator[int, None, None]:
