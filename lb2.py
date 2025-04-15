@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import re
 import string
 import time
@@ -84,8 +85,28 @@ def task3_generator1() -> None:
         print(num)
 
 
+def task4_filter_primes(nums: list[int]) -> Generator[int, None, None]:
+    for num in nums:
+        if num <= 1 or num % 2 == 0:
+            continue
+        is_prime = True
+        for i in range(3, int(num ** 0.5 + 1), 2):
+            if num % i == 0:
+                is_prime = False
+                break
+
+        if is_prime:
+            yield num
+
+
 def task4_generator2() -> None:
-    ...  # TODO: generator task
+    """ Generator to filter only prime numbers """
+    nums = [random.randint(2, 100) for _ in range(32)]
+    print(f"Nums: {nums}")
+
+    print("Primes:")
+    for prime in task4_filter_primes(nums):
+        print(prime)
 
 
 def task5_dec(func: Callable) -> Callable:
