@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+import re
 import string
 import time
 from functools import wraps
-from typing import Callable
+from typing import Callable, Generator
 
 
 class Task1CaesarCipher:
     ALPHABET = string.printable
 
+    __slots__ = ("text", "offset", "decrypt",)
+
     class CaesarCipherIterator:
+        __slots__ = ("cipher", "position",)
+
         def __init__(self, cipher: Task1CaesarCipher):
             self.cipher = cipher
             self.position = 0
@@ -62,8 +67,21 @@ def task2_iterator2() -> None:
     ...  # TODO: iterator task
 
 
+def task3_fibonacci(n: int) -> Generator[int, None, None]:
+    a = 0
+    b = 1
+    for _ in range(n):
+        a, b = b, a + b
+        yield b
+
+
 def task3_generator1() -> None:
-    ...  # TODO: generator task
+    """ Fibonacci generator """
+
+    print("First 10 fibonacci numbers from generator")
+
+    for num in task3_fibonacci(10):
+        print(num)
 
 
 def task4_generator2() -> None:
@@ -104,7 +122,7 @@ def task6_dec(cls: type) -> type:
         return real_getattr(self, name)
 
     def new_setattr(self, name: str, value: ...) -> ...:
-        print(f"Setting attribute {name} to {value}")
+        print(f"Setting attribute {name} to {value!r}")
         return real_setattr(self, name, value)
 
     cls.__getattribute__ = new_getattr
@@ -139,7 +157,27 @@ def task8_classes2() -> None:
 
 
 def task9_regex1() -> None:
-    ...  # TODO: iterator task
+    """ Extract all "a" links from html """
+    html = """
+<html>
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents. You may use this
+    domain in literature without prior coordination or asking for permission.</p>
+    <p><a a="b" b="c" href="https://www.iana.org/domains/example">More information...</a></p>
+</div>
+</body>
+</html>
+"""
+
+    links = re.findall(
+        r'<a(?:\s+[a-zA-Z0-9_-]=[\'"].+?[\'"])*?\shref="(https?://(?:[a-zA-Z0-9-]+\.)+?[a-zA-Z0-9-]+\.[a-zA-Z]{2,12}(?:(?:/\S+?)+?))".*?>',
+        html
+    )
+
+    for link in links:
+        print(link)
 
 
 def task10_regex2() -> None:
