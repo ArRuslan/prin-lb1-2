@@ -5,8 +5,9 @@ import random
 import re
 import string
 import time
+from abc import abstractmethod, ABC
 from functools import wraps
-from typing import Callable, Generator
+from typing import Callable, Generator, Any
 
 
 class Task1CaesarCipher:
@@ -206,12 +207,86 @@ def task6_decorator2() -> None:
     print(f"{obj.c = }")
 
 
+class Task7Shape(ABC):
+    @abstractmethod
+    def area(self) -> float:
+        ...
+
+    @abstractmethod
+    def perimeter(self) -> float:
+        ...
+
+
+class Task7Rectagle(Task7Shape):
+    def __init__(self, width: float, height: float) -> None:
+        self.width = width
+        self.height = height
+
+    def area(self) -> float:
+        return self.width * self.height
+
+    def perimeter(self) -> float:
+        return 2 * self.width + 2 * self.height
+
+
+class Task7Circle(Task7Shape):
+    def __init__(self, radius: float) -> None:
+        self.radius = radius
+
+    def area(self) -> float:
+        return 3.14 * self.radius ** 2
+
+    def perimeter(self) -> float:
+        return 2 * 3.14 * self.radius
+
+
 def task7_classes1() -> None:
-    ...  # TODO: classes task
+    """ Create abstract shape (base) class with area and perimeter method, create rectangle and circle classes """
+    rect1 = Task7Rectagle(2, 3)
+    rect2 = Task7Rectagle(3, 4)
+
+    circle1 = Task7Circle(5)
+    circle2 = Task7Circle(7)
+
+    print(f"Rectangle(width={rect1.width:.2f}, height={rect1.height:.2f}): area = {rect1.area():.2f}, perimeter = {rect1.perimeter():.2f}")
+    print(f"Rectangle(width={rect2.width:.2f}, height={rect2.height:.2f}): area = {rect2.area():.2f}, perimeter = {rect2.perimeter():.2f}")
+    print(f"Circle(radius={circle1.radius:.2f}): area = {circle1.area():.2f}, perimeter = {circle1.perimeter():.2f}")
+    print(f"Circle(radius={circle2.radius:.2f}): area = {circle2.area():.2f}, perimeter = {circle2.perimeter():.2f}")
+
+
+class Task8Metaclass(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(cls, *args, **kwargs)
+        return cls._instances[cls]
+    def __new__(cls, name: str, bases: tuple[type], attrs: dict[str, ...]):
+        def _get_instance(_cls):
+            return _cls()
+
+        attrs["get_instance"] = classmethod(_get_instance)
+        return super().__new__(cls, name, bases, attrs)
+
+
+class Task8Singleton(metaclass=Task8Metaclass):
+    def __init__(self, a: int = 1, b: int = 2, c: str = "test") -> None:
+        self.a = a
+        self.b = b
+        self.c = c
 
 
 def task8_classes2() -> None:
-    ...  # TODO: classes task
+    """ Singleton via metaclass """
+
+    obj1 = Task8Singleton(123)
+    print(f"{id(obj1)=}, {obj1.a=}, {obj1.b=}, {obj1.c=}")
+
+    obj2 = Task8Singleton(456, 789, "qwe")
+    print(f"{id(obj2)=}, {obj2.a=}, {obj2.b=}, {obj2.c=}")
+
+    obj3 = Task8Singleton.get_instance()
+    print(f"{id(obj3)=}, {obj3.a=}, {obj3.b=}, {obj3.c=}")
 
 
 def task9_regex1() -> None:
